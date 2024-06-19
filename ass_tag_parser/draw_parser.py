@@ -1,5 +1,9 @@
+from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable, Optional, Union, cast
+
+import sys
+sys_version=int(sys.version_info[1])
 
 from ass_tag_parser.common import Meta
 from ass_tag_parser.draw_struct import (
@@ -81,12 +85,10 @@ def _parse_draw_commands(ctx: _ParseContext) -> Iterable[AssDrawCmd]:
         elif cmd == "l":
             ret = AssDrawCmdLine(list(_read_points(ctx.io, min_count=1)))
         elif cmd == "b":
-            ret = AssDrawCmdBezier(
-                cast(
-                    tuple[AssDrawPoint, AssDrawPoint, AssDrawPoint],
-                    tuple(_read_points(ctx.io, min_count=3, max_count=3)),
-                )
-            )
+            if sys_version >= 9:
+                ret = AssDrawCmdBezier(cast(tuple[AssDrawPoint, AssDrawPoint, AssDrawPoint], tuple(_read_points(ctx.io, min_count=3, max_count=3)),))
+            elif sys_version < 9:
+                ret = AssDrawCmdBezier(cast(tuple, tuple(_read_points(ctx.io, min_count=3, max_count=3)),))
         elif cmd == "s":
             ret = AssDrawCmdSpline(
                 list(_read_points(ctx.io, min_count=3, max_count=None))

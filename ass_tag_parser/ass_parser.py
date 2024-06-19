@@ -1,7 +1,14 @@
+from __future__ import annotations
 import re
 from dataclasses import dataclass
-from functools import cache
 from typing import Any, Iterable, Optional, Union
+
+import sys
+sys_version=int(sys.version_info[1])
+if sys_version >= 9:
+    from functools import cache
+elif sys_version < 9:
+    pass
 
 from ass_tag_parser.ass_struct import (
     AssItem,
@@ -698,20 +705,38 @@ def parse_ass(text: str) -> list[AssItem]:
     return list(_parse_ass(ctx))
 
 
-@cache
-def ass_to_plaintext(text: str) -> str:
-    """Strip ASS tags from an ASS line.
+if sys_version >= 9:
+    @cache
+    def ass_to_plaintext(text: str) -> str:
+        """Strip ASS tags from an ASS line.
 
-    :param text: input ASS line
-    :return: plain text
-    """
-    try:
-        ass_line = parse_ass(text)
-    except ParseError:
-        ret = str(re.sub("{[^}]*}", "", text))
-    else:
-        ret = ""
-        for item in ass_line:
-            if isinstance(item, AssText):
-                ret += item.text
-    return ret.replace("\\h", " ").replace("\\n", " ").replace("\\N", "\n")
+        :param text: input ASS line
+        :return: plain text
+        """
+        try:
+            ass_line = parse_ass(text)
+        except ParseError:
+            ret = str(re.sub("{[^}]*}", "", text))
+        else:
+            ret = ""
+            for item in ass_line:
+                if isinstance(item, AssText):
+                    ret += item.text
+        return ret.replace("\\h", " ").replace("\\n", " ").replace("\\N", "\n")
+elif sys_version < 9:
+    def ass_to_plaintext(text: str) -> str:
+        """Strip ASS tags from an ASS line.
+
+        :param text: input ASS line
+        :return: plain text
+        """
+        try:
+            ass_line = parse_ass(text)
+        except ParseError:
+            ret = str(re.sub("{[^}]*}", "", text))
+        else:
+            ret = ""
+            for item in ass_line:
+                if isinstance(item, AssText):
+                    ret += item.text
+        return ret.replace("\\h", " ").replace("\\n", " ").replace("\\N", "\n")

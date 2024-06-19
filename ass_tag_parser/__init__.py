@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .ass_composer import compose_ass
 from .ass_parser import ass_to_plaintext, parse_ass
 from .ass_struct import *
