@@ -1,6 +1,6 @@
+from __future__ import annotations
 import io
 from typing import Optional
-
 
 class MyIO:
     def __init__(

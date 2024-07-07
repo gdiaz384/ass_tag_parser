@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any
 
 from ass_tag_parser.common import smart_float
